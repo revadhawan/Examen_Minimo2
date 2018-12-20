@@ -1,14 +1,20 @@
 package edu.upc.eetac.dsa.examen_minimo2;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,11 +24,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DibaAPI dibaAPI;
+    private DibaAPI createAPIRest;
+    private CitiesRecyclerViewAdapter recycler;
     private RecyclerView recyclerView;
     ProgressBar progressBar;
-    private String token;
 
+    TextView municipi;
+    TextView id;
+    ImageView ImageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,40 +39,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recycler = new CitiesRecyclerViewAdapter(this);
+        recyclerView.setAdapter(recycler);
         recyclerView.setHasFixedSize(true);
-        createdibaAPI();
-        getCities();
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        municipi = findViewById(R.id.municipiNom_textView);
+        id = findViewById(R.id.id_textView);
+        ImageURL = findViewById(R.id.escut);
+
+        Intent intent = getIntent();
+
+        createAPIRest = DibaAPI.createAPIRest();
+
+        getData();
+
     }
 
 
-    private void createdibaAPI(){
-        Gson gson = new GsonBuilder()
-                .create();
+    private void getData() {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(dibaAPI.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
+        Call<Cities> callCitiesList = createAPIRest.getData();
 
-        dibaAPI = retrofit.create(DibaAPI.class);
-    }
-
-
-    private void getCities() {
-        /*DibaAPI dibaAPI = dibaAPI;*/
-
-        showProgress(true);
-        Call<Cities> callCitiesList = dibaAPI.cities("1", "11");
         callCitiesList.enqueue(new Callback<Cities>() {
             @Override
             public void onResponse(Call<Cities> call, Response<Cities> response) {
-                int statusCode = response.code();
                 if (response.isSuccessful()) {
                     Cities cities = response.body();
-                    Object mListener;
-                    recyclerView.setAdapter(new CitiesRecyclerViewAdapter(cities.getElements()));
-                    showProgress(false);
-                }
+
+                    List<Element> elementList = cities.getElements();
+
+                    for(int i = 0; i<elementList.size(); i++){
+                        Log.i("Name city: " + elementList.get(i).getMunicipiNom(), response.message());
+                    }
+
+                    if(elementList.size() != 0){
+                        recycler.addElements(elementList);
+                    }
+               }
             }
 
             @Override
@@ -88,6 +101,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void showProgress(boolean b) {
-    }
 }

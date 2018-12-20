@@ -3,6 +3,7 @@ package edu.upc.eetac.dsa.examen_minimo2;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -335,27 +336,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                final SharedPreferences sharedPref =
+                        PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean("registered", true);
+                editor.putString("username", this.mEmail);
+                editor.putString("password", this.mPassword);
+                editor.apply();
+
+                newIntent();
+
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
         }
 
+
         @Override
         protected void onCancelled() {
             mAuthTask = null;
             showProgress(false);
         }
-
-        final SharedPreferences sharedPref =
-                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-            /*editor.putBoolean("registered", true);
-            editor.putString("username", this.mEmail);
-            editor.putString("password", this.mPassword);
-            editor.apply();*/
-
     }
+
+    private void newIntent(){
+    Intent intent = new Intent(this, MainActivity.class);
+    startActivity(intent);
 }
+}
+
 
