@@ -1,48 +1,68 @@
 package edu.upc.eetac.dsa.examen_minimo2;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.content.Context;
+        import android.support.constraint.ConstraintLayout;
+        import android.support.v7.widget.RecyclerView;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.ImageView;
+        import android.widget.LinearLayout;
+        import android.widget.TextView;
 
-import java.util.List;
+        import com.squareup.picasso.Picasso;
 
-class CitiesRecyclerViewAdapter extends RecyclerView.Adapter {
-
-    public TextView text;
-
-    private ImageView escutImageView;
-    private TextView nametxt;
-    private LinearLayout linearLayout;
+        import java.util.ArrayList;
+        import java.util.List;
 
 
-    public ViewHolder(View v) {
-        super(v);
-        text = (TextView) v.findViewById(android.R.id.text1);
-        escutImageView=v.findViewById(R.id.imageuser);
-        nametxt=v.findViewById(R.id.usernaetxt);
-        linearLayout =v.findViewById(R.id.linearLayout);
+    public class CitiesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.Recycler.ViewHolder> {
+
+    private List<Element> data;
+    private Context context;
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView escut;
+        private TextView municipi;
+        private TextView id;
+        private ConstraintLayout constraintLayout;
+
+        public ViewHolder(View v) {
+            super(v);
+            escut=v.findViewById(R.id.escut);
+            municipi=v.findViewById(R.id.municipiNom_textView);
+            id=v.findViewById(R.id.id_textView);
+        }
     }
 
-    public CitiesRecyclerViewAdapter(List<Element> elements) {
+    public void addElements(List<Element> elementList) {
+        data.addAll(elementList);
+        notifyDataSetChanged();
     }
 
-    @NonNull
+    public CitiesRecyclerViewAdapter(Context context) {
+        this.data = new ArrayList<>();
+        this.context=context;
+    }
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return null;
+    public RecyclerView.Recycler.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v;
+        v=LayoutInflater.from(parent.getContext()).inflate(R.layout.item_recycler, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-
+    public void onBindViewHolder(RecyclerView.Recycler.ViewHolder holder, int position) {
+        Element elementdata = ((Element)data.get(position));
+        holder.municipi.setText(elementdata.getMunicipiNom());
+        holder.id.setText(elementdata.getIne());
+        Picasso.with(context).load(elementdata.getMunicipiEscut()).into(holder.cityImageView);
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return data.size();
     }
+
+
 }

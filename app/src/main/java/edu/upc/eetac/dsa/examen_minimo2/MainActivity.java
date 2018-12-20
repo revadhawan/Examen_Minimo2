@@ -1,13 +1,11 @@
 package edu.upc.eetac.dsa.examen_minimo2;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,8 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Cities cities = response.body();
                     Object mListener;
-                    recyclerView.setAdapter(new
-                            CitiesRecyclerViewAdapter(cities.getElements()));
+                    recyclerView.setAdapter(new CitiesRecyclerViewAdapter(cities.getElements()));
                     showProgress(false);
                 }
             }
